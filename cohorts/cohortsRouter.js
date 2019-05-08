@@ -25,6 +25,21 @@ cohortsRouter.get('/:id', (req, res) => {
     .catch(err => {res.status(500).json(err)})
 })
 
+cohortsRouter.get('/:id/students', (req, res) => {
+    db('Cohorts')
+    .join('Students', 'students.cohort_id', "cohorts.id")
+    .select('students.id', 'students.name')
+    .where('cohort_id', req.params.id)
+    .first()
+    .then(students => {
+        res.status(200).json(students)
+    })
+    .catch(err => {res.status(500).json(err)})
+})
+
+
+
+
 cohortsRouter.post('/', (req, res) => {
     db('Cohorts')
     .insert(req.body)
@@ -45,7 +60,7 @@ cohortsRouter.delete('/:id', (req, res) => {
     .where({ id: req.params.id})
     .del()
     .then(count => {
-        count > 0 ? res.status(200).json({ message: "cohort deleted"}) : res.status(404),json({ message:"can not delete a none exist cohort"})
+        count > 0 ? res.status(200).json({ message: "cohort deleted"}) : res.status(404).json({ message:"can not delete a none exist cohort"})
     })
     .catch(err => {res.status(500).json(err)})
 })
